@@ -134,8 +134,8 @@ RUN chmod +x /opt/runpod/motd.sh
 
 # Auto-attach to tmux "runpod" session on SSH login; exit SSH on detach
 RUN echo 'if [ -n "$SSH_CONNECTION" ] && [ -z "$TMUX" ]; then' >> /root/.zprofile \
-    && echo '    tmux new-session -A -s runpod' >> /root/.zprofile \
-    && echo '    exit' >> /root/.zprofile \
+    && echo '    tmux new-session -A -s runpod 2>/dev/null' >> /root/.zprofile \
+    && echo '    clear && exit' >> /root/.zprofile \
     && echo 'fi'  >> /root/.zprofile
 
 # Show motd once inside tmux (via .zshrc since tmux shells are non-login)
