@@ -21,17 +21,12 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /run/sshd
 
-# Create user yiwei with sudo
-RUN useradd -m -s /bin/bash yiwei \
-    && echo "yiwei ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-
-# SSH config: allow pubkey auth, disable password auth
-RUN sed -i 's/#PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config \
+# SSH config
+RUN sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config \
     && sed -i 's/#PubkeyAuthentication.*/PubkeyAuthentication yes/' /etc/ssh/sshd_config \
     && sed -i 's/#PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
 
-USER yiwei
-WORKDIR /home/yiwei
+WORKDIR /root
 
 # Install Homebrew
 RUN NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -42,33 +37,31 @@ RUN brew install node go python uv
 
 # Install Claude Code (official binary)
 RUN curl -fsSL https://claude.ai/install.sh | bash
-ENV PATH="/home/yiwei/.local/bin:/home/yiwei/.claude/bin:${PATH}"
+ENV PATH="/root/.local/bin:/root/.claude/bin:${PATH}"
 
 # Create global venv and activate by default
-RUN uv venv /home/yiwei/.venv
-ENV VIRTUAL_ENV="/home/yiwei/.venv"
-ENV PATH="/home/yiwei/.venv/bin:${PATH}"
+RUN uv venv /root/.venv
+ENV VIRTUAL_ENV="/root/.venv"
+ENV PATH="/root/.venv/bin:${PATH}"
 
 # Install PyTorch (CUDA 12.8)
 RUN uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
 
 # Install ComfyUI
-RUN git clone https://github.com/comfyanonymous/ComfyUI.git /home/yiwei/ComfyUI \
-    && cd /home/yiwei/ComfyUI \
+RUN git clone https://github.com/comfyanonymous/ComfyUI.git /root/ComfyUI \
+    && cd /root/ComfyUI \
     && uv pip install -r requirements.txt
 
 # Install ComfyUI-Manager
-RUN git clone https://github.com/ltdrdata/ComfyUI-Manager.git /home/yiwei/ComfyUI/custom_nodes/ComfyUI-Manager
+RUN git clone https://github.com/ltdrdata/ComfyUI-Manager.git /root/ComfyUI/custom_nodes/ComfyUI-Manager
 
 # Install dotfiles
 RUN curl -sSL dot.yiwei.dev | bash
 
 # Entrypoint
-USER root
-RUN mkdir -p /home/yiwei/.runpod
-COPY --chown=yiwei:yiwei entrypoint.sh /home/yiwei/.runpod/entrypoint.sh
-RUN chmod +x /home/yiwei/.runpod/entrypoint.sh
+COPY entrypoint.sh /root/.runpod/entrypoint.sh
+RUN chmod +x /root/.runpod/entrypoint.sh
 
 EXPOSE 22 8188
 
-ENTRYPOINT ["/home/yiwei/.runpod/entrypoint.sh"]
+ENTRYPOINT ["/root/.runpod/entrypoint.sh"]
