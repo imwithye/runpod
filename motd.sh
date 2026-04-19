@@ -2,7 +2,8 @@
 # Runpod welcome message
 
 echo ""
-echo "=============================== Runpod ================================="
+echo "Runpod"
+echo ""
 
 # System info
 GPU_NAME=$(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null | head -1)
@@ -17,7 +18,8 @@ printf "  %-12s %s\n" "Memory:" "$MEM_INFO"
 printf "  %-12s %s\n" "Disk:" "$DISK_INFO"
 
 echo ""
-echo "-------------------------------- Services ------------------------------"
+echo "Services"
+echo ""
 pm2 jlist 2>/dev/null | python3 -c "
 import sys, json
 try:
@@ -34,5 +36,4 @@ echo ""
 echo "  pm2 logs <name>      View logs"
 echo "  pm2 restart <name>   Restart service"
 echo "  glances              System monitor"
-echo "========================================================================"
 echo ""
