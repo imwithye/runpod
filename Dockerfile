@@ -108,12 +108,8 @@ RUN git clone https://github.com/comfyanonymous/ComfyUI.git /opt/ComfyUI \
 RUN git clone https://github.com/ltdrdata/ComfyUI-Manager.git /opt/ComfyUI/custom_nodes/ComfyUI-Manager
 
 # =============================================================================
-# Monitoring: Netdata, glances
+# Monitoring: glances
 # =============================================================================
-RUN curl -fsSL https://get.netdata.cloud/kickstart.sh > /tmp/netdata-kickstart.sh \
-    && sh /tmp/netdata-kickstart.sh --non-interactive --dont-wait --dont-start-it --disable-telemetry \
-    && rm /tmp/netdata-kickstart.sh
-
 RUN uv pip install glances[gpu]
 
 # =============================================================================
