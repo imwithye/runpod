@@ -32,12 +32,14 @@ WORKDIR /root
 RUN useradd -m -s /bin/bash linuxbrew \
     && echo "linuxbrew ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 USER linuxbrew
+ENV USER=linuxbrew
 RUN NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}"
 
 # Install dev toolchain via Homebrew
 RUN brew install node go python uv
 USER root
+ENV USER=root
 
 # Install Claude Code (official binary)
 RUN curl -fsSL https://claude.ai/install.sh | bash
