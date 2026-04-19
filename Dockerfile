@@ -34,6 +34,8 @@ RUN sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config \
     && sed -i 's/#PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config \
     && sed -i 's/#UsePAM.*/UsePAM yes/' /etc/ssh/sshd_config
 
+RUN chsh -s /bin/zsh root
+
 WORKDIR /root
 
 # =============================================================================
