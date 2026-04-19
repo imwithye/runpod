@@ -95,6 +95,12 @@ ENV PATH="/root/.local/bin:/root/.claude/bin:${PATH}"
 # =============================================================================
 RUN curl -sSL dot.yiwei.dev | bash
 
+# Auto-attach to tmux "runpod" session on SSH login; exit SSH on detach
+RUN echo 'if [ -n "$SSH_CONNECTION" ] && [ -z "$TMUX" ]; then' >> /root/.zprofile \
+    && echo '    tmux new-session -A -s runpod' >> /root/.zprofile \
+    && echo '    exit' >> /root/.zprofile \
+    && echo 'fi' >> /root/.zprofile
+
 RUN echo "VIRTUAL_ENV=/root/.venv" >> /etc/environment \
     && echo "PATH=/root/.venv/bin:/root/.local/bin:/root/.claude/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" >> /etc/environment
 
