@@ -37,7 +37,9 @@ RUN NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.co
 ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}"
 
 # Install dev toolchain via Homebrew
+WORKDIR /tmp
 RUN brew install node go python uv
+WORKDIR /root
 USER root
 ENV USER=root
 
