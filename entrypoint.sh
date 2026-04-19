@@ -39,27 +39,27 @@ mkdir -p $WORKSPACE
 
 # ~/.claude/ (credentials, projects, todos)
 if [ -d "$HOME/.claude" ] && [ ! -L "$HOME/.claude" ]; then
-    if [ -z "$(ls -A $WORKSPACE/claude 2>/dev/null)" ]; then
-        mkdir -p $WORKSPACE/claude
-        mv $HOME/.claude/* $WORKSPACE/claude/ 2>/dev/null || true
-        mv $HOME/.claude/.* $WORKSPACE/claude/ 2>/dev/null || true
+    if [ -z "$(ls -A $WORKSPACE/.claude 2>/dev/null)" ]; then
+        mkdir -p $WORKSPACE/.claude
+        mv $HOME/.claude/* $WORKSPACE/.claude/ 2>/dev/null || true
+        mv $HOME/.claude/.* $WORKSPACE/.claude/ 2>/dev/null || true
     fi
     rm -rf $HOME/.claude
 fi
-safe_symlink $WORKSPACE/claude $HOME/.claude
+safe_symlink $WORKSPACE/.claude $HOME/.claude
 
 # ~/.claude.json (MCP servers, project trust, onboarding state)
 if [ -f "$HOME/.claude.json" ] && [ ! -L "$HOME/.claude.json" ]; then
-    if [ ! -f "$WORKSPACE/claude.json" ]; then
-        mv "$HOME/.claude.json" "$WORKSPACE/claude.json"
+    if [ ! -f "$WORKSPACE/.claude.json" ]; then
+        mv "$HOME/.claude.json" "$WORKSPACE/.claude.json"
     else
         rm -f "$HOME/.claude.json"
     fi
 fi
-if [ ! -f "$WORKSPACE/claude.json" ]; then
-    echo '{"hasCompletedOnboarding":true,"theme":"auto"}' > "$WORKSPACE/claude.json"
+if [ ! -f "$WORKSPACE/.claude.json" ]; then
+    echo '{"hasCompletedOnboarding":true,"theme":"auto"}' > "$WORKSPACE/.claude.json"
 fi
-ln -sf "$WORKSPACE/claude.json" "$HOME/.claude.json"
+ln -sf "$WORKSPACE/.claude.json" "$HOME/.claude.json"
 
 # =============================================================================
 # Workspace persistence — ComfyUI
