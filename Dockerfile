@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
     file \
+    fzf \
     git \
     locales \
     ncurses-term \
@@ -17,16 +18,26 @@ RUN apt-get update && apt-get install -y \
     procps \
     sudo \
     tmux \
+    vim \
     wget \
+    zsh \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /run/sshd
 
 # SSH config
 RUN sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config \
     && sed -i 's/#PubkeyAuthentication.*/PubkeyAuthentication yes/' /etc/ssh/sshd_config \
-    && sed -i 's/#PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
+    && sed -i 's/#PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config \
+    && sed -i 's/#UsePAM.*/UsePAM yes/' /etc/ssh/sshd_config
 
 WORKDIR /root
+
+# Install lazygit
+RUN LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*') \
+    && curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz" \
+    && tar xf lazygit.tar.gz lazygit \
+    && install lazygit /usr/local/bin/ \
+    && rm lazygit lazygit.tar.gz
 
 # Install Node.js (via NodeSource)
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
@@ -49,6 +60,10 @@ ENV PATH="/root/.local/bin:/root/.claude/bin:${PATH}"
 RUN uv venv --python 3 /root/.venv
 ENV VIRTUAL_ENV="/root/.venv"
 ENV PATH="/root/.venv/bin:${PATH}"
+
+# Persist environment for SSH sessions
+RUN echo "VIRTUAL_ENV=/root/.venv" >> /etc/environment \
+    && echo "PATH=/root/.venv/bin:/root/.local/bin:/root/.claude/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" >> /etc/environment
 
 # Install PyTorch (CUDA 12.8)
 RUN uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
