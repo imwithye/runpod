@@ -48,12 +48,12 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
 RUN curl -fsSL https://go.dev/dl/go1.24.2.linux-amd64.tar.gz | tar -C /usr/local -xz
 ENV PATH="/usr/local/go/bin:${PATH}"
 
-RUN UV_INSTALL_DIR=/opt/uv curl -LsSf https://astral.sh/uv/install.sh | sh
-ENV PATH="/opt/uv:${PATH}"
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+ENV PATH="/root/.local/bin:${PATH}"
 
-RUN uv venv --python 3 /opt/venv
-ENV VIRTUAL_ENV="/opt/venv"
-ENV PATH="/opt/venv/bin:${PATH}"
+RUN uv venv --python 3 ~/.venv
+ENV VIRTUAL_ENV="/root/.venv"
+ENV PATH="/root/.venv/bin:${PATH}"
 
 RUN npm i -g pm2
 
@@ -90,8 +90,8 @@ ENV PATH="/root/.local/bin:/root/.claude/bin:${PATH}"
 # =============================================================================
 RUN curl -sSL dot.yiwei.dev | bash
 
-RUN echo "VIRTUAL_ENV=/opt/venv" >> /etc/environment \
-    && echo "PATH=/opt/venv/bin:/opt/uv:/root/.local/bin:/root/.claude/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" >> /etc/environment
+RUN echo "VIRTUAL_ENV=/root/.venv" >> /etc/environment \
+    && echo "PATH=/root/.venv/bin:/root/.local/bin:/root/.claude/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" >> /etc/environment
 
 # =============================================================================
 # Entrypoint
