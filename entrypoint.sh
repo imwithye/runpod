@@ -94,4 +94,8 @@ pm2 delete code-server-8080 >/dev/null 2>&1 || true
 pm2 start "code-server --bind-addr 127.0.0.1:8080 --auth none /workspace" \
     --name code-server-8080
 
+pm2 delete netdata-19999 >/dev/null 2>&1 || true
+pm2 start "netdata -D -i 127.0.0.1 -p 19999" \
+    --name netdata-19999
+
 exec /usr/sbin/sshd -D
