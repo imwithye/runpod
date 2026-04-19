@@ -141,8 +141,8 @@ RUN echo 'if [ -n "$SSH_CONNECTION" ] && [ -z "$TMUX" ]; then' >> /root/.zprofil
 # Show motd once inside tmux (via .zshrc since tmux shells are non-login)
 RUN echo '[ -n "$TMUX" ] && [ -z "$MOTD_SHOWN" ] && export MOTD_SHOWN=1 && /opt/runpod/motd.sh' >> /root/.zshrc.local
 
-RUN echo "VIRTUAL_ENV=/root/.venv" >> /etc/environment \
-    && echo "PATH=/root/.venv/bin:/root/.local/bin:/root/.claude/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" >> /etc/environment
+# Source container env vars (written by entrypoint) in all zsh sessions
+RUN echo '[ -f /opt/runpod/container.env ] && source /opt/runpod/container.env' >> /root/.zshenv
 
 # =============================================================================
 # Entrypoint

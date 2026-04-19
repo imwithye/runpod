@@ -32,6 +32,13 @@ if [ -n "$USER_PASSWORD" ]; then
 fi
 
 # =============================================================================
+# Export container env vars for SSH sessions
+# =============================================================================
+env | grep -vE '^(HOME=|USER=|SHELL=|TERM=|SHLVL=|PWD=|_=|HOSTNAME=)' \
+    | sed 's/"/\\"/g; s/\(.*\)=\(.*\)/export \1="\2"/' \
+    > /opt/runpod/container.env
+
+# =============================================================================
 # Workspace persistence — Claude Code
 # =============================================================================
 WORKSPACE=/workspace
