@@ -3,7 +3,7 @@ FROM nvidia/cuda:12.8.1-devel-ubuntu24.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TERM=xterm-256color
 ENV COLORTERM=truecolor
-ENV LANG=C.UTF-8
+ENV LANG=en_US.UTF-8
 
 # =============================================================================
 # System packages
@@ -23,7 +23,9 @@ RUN apt-get update && apt-get install -y \
     wget \
     zsh \
     && rm -rf /var/lib/apt/lists/* \
-    && mkdir -p /run/sshd
+    && mkdir -p /run/sshd \
+    && sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen \
+    && locale-gen
 
 # =============================================================================
 # SSH
