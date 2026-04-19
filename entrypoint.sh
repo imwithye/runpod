@@ -34,11 +34,8 @@ fi
 # =============================================================================
 # Export container env vars for SSH sessions
 # =============================================================================
-: > /opt/runpod/container.env
-while IFS='=' read -r key value; do
-    [[ "$key" =~ ^(HOME|USER|SHELL|TERM|SHLVL|PWD|_|HOSTNAME)$ ]] && continue
-    printf 'export %s="%s"\n' "$key" "${value//\"/\\\"}" >> /opt/runpod/container.env
-done < <(env)
+export -p | grep -vE ' (HOME|USER|SHELL|TERM|SHLVL|PWD|_|HOSTNAME)=' \
+    > /opt/runpod/container.env
 
 # =============================================================================
 # Workspace persistence — Claude Code
