@@ -50,7 +50,7 @@ ENV PATH="/usr/local/go/bin:${PATH}"
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 ENV PATH="/root/.local/bin:${PATH}"
 
-RUN uv venv --python 3 ~/.venv
+RUN uv venv --python 3 --seed ~/.venv
 ENV VIRTUAL_ENV="/root/.venv"
 ENV PATH="/root/.venv/bin:${PATH}"
 
