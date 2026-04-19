@@ -73,6 +73,34 @@ RUN FZF_VERSION=$(curl -s "https://api.github.com/repos/junegunn/fzf/releases/la
 # =============================================================================
 RUN uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
 
+# Hugging Face ecosystem
+RUN uv pip install \
+    huggingface_hub \
+    transformers \
+    datasets \
+    accelerate \
+    peft \
+    diffusers \
+    safetensors \
+    tokenizers \
+    sentencepiece
+
+# ML tools & training
+RUN uv pip install \
+    bitsandbytes \
+    xformers \
+    tensorboard \
+    wandb \
+    scipy \
+    scikit-learn
+
+# Image & video processing
+RUN uv pip install \
+    opencv-python-headless \
+    imageio \
+    imageio-ffmpeg \
+    pillow
+
 RUN git clone https://github.com/comfyanonymous/ComfyUI.git /opt/ComfyUI \
     && cd /opt/ComfyUI \
     && uv pip install -r requirements.txt
