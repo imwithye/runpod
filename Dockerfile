@@ -28,12 +28,16 @@ RUN sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config \
 
 WORKDIR /root
 
-# Install Homebrew
+# Install Homebrew (requires non-root user)
+RUN useradd -m -s /bin/bash linuxbrew \
+    && echo "linuxbrew ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+USER linuxbrew
 RUN NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}"
 
 # Install dev toolchain via Homebrew
 RUN brew install node go python uv
+USER root
 
 # Install Claude Code (official binary)
 RUN curl -fsSL https://claude.ai/install.sh | bash
