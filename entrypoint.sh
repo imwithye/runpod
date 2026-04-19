@@ -43,6 +43,7 @@ env | grep -vE '^(HOME=|USER=|SHELL=|TERM=|SHLVL=|PWD=|_=|HOSTNAME=)' \
 # =============================================================================
 WORKSPACE=/workspace
 mkdir -p $WORKSPACE
+ln -sfn $WORKSPACE /root/workspace
 
 # ~/.claude/ (credentials, projects, todos)
 if [ -d "$HOME/.claude" ] && [ ! -L "$HOME/.claude" ]; then
