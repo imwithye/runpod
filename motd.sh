@@ -1,8 +1,8 @@
 #!/bin/bash
-# RunPod welcome message
+# Runpod welcome message
 
 echo ""
-echo "=============================== RunPod ================================="
+echo "=============================== Runpod ================================="
 
 # System info
 GPU_NAME=$(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null | head -1)
