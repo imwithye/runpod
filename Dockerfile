@@ -132,6 +132,10 @@ ENV PATH="/root/.local/bin:/root/.claude/bin:${PATH}"
 # =============================================================================
 RUN curl -sSL dot.yiwei.dev | bash
 
+# Welcome message on SSH login
+COPY motd.sh /etc/profile.d/motd.sh
+RUN chmod +x /etc/profile.d/motd.sh
+
 # Auto-attach to tmux "runpod" session on SSH login; exit SSH on detach
 RUN echo 'if [ -n "$SSH_CONNECTION" ] && [ -z "$TMUX" ]; then' >> /root/.zprofile \
     && echo '    tmux new-session -A -s runpod' >> /root/.zprofile \
