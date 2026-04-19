@@ -75,6 +75,11 @@ RUN git clone https://github.com/comfyanonymous/ComfyUI.git /opt/ComfyUI \
 RUN git clone https://github.com/ltdrdata/ComfyUI-Manager.git /opt/ComfyUI/custom_nodes/ComfyUI-Manager
 
 # =============================================================================
+# code-server
+# =============================================================================
+RUN curl -fsSL https://code-server.dev/install.sh | sh
+
+# =============================================================================
 # Claude Code (installs to ~/.local/bin and ~/.claude, no custom dir support)
 # =============================================================================
 RUN curl -fsSL https://claude.ai/install.sh | bash
@@ -94,6 +99,6 @@ RUN echo "VIRTUAL_ENV=/opt/venv" >> /etc/environment \
 COPY entrypoint.sh /opt/runpod/entrypoint.sh
 RUN chmod +x /opt/runpod/entrypoint.sh
 
-EXPOSE 22 8188
+EXPOSE 22
 
 ENTRYPOINT ["/opt/runpod/entrypoint.sh"]

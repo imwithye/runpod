@@ -83,11 +83,15 @@ workspace:
 EOF
 
 # =============================================================================
-# Start services
+# Start services (localhost only, access via SSH port forwarding)
 # =============================================================================
-pm2 delete comfyui >/dev/null 2>&1 || true
-pm2 start "python main.py --port 8188 --listen 0.0.0.0" \
-    --name comfyui \
+pm2 delete comfyui-8188 >/dev/null 2>&1 || true
+pm2 start "python main.py --port 8188 --listen 127.0.0.1" \
+    --name comfyui-8188 \
     --cwd /opt/ComfyUI
+
+pm2 delete code-server-8080 >/dev/null 2>&1 || true
+pm2 start "code-server --bind-addr 127.0.0.1:8080 --auth none /workspace" \
+    --name code-server-8080
 
 exec /usr/sbin/sshd -D
