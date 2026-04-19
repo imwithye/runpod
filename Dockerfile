@@ -49,40 +49,43 @@ RUN curl -fsSL https://go.dev/dl/go1.24.2.linux-amd64.tar.gz | tar -C /usr/local
 ENV PATH="/usr/local/go/bin:${PATH}"
 
 # Install uv
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-ENV PATH="/root/.local/bin:${PATH}"
-
-# Install Claude Code (official binary)
-RUN curl -fsSL https://claude.ai/install.sh | bash
-ENV PATH="/root/.local/bin:/root/.claude/bin:${PATH}"
+RUN UV_INSTALL_DIR=/opt/uv curl -LsSf https://astral.sh/uv/install.sh | sh
+ENV PATH="/opt/uv:${PATH}"
 
 # Create global venv and activate by default
-RUN uv venv --python 3 /root/.venv
-ENV VIRTUAL_ENV="/root/.venv"
-ENV PATH="/root/.venv/bin:${PATH}"
+RUN uv venv --python 3 /opt/venv
+ENV VIRTUAL_ENV="/opt/venv"
+ENV PATH="/opt/venv/bin:${PATH}"
 
-# Persist environment for SSH sessions
-RUN echo "VIRTUAL_ENV=/root/.venv" >> /etc/environment \
-    && echo "PATH=/root/.venv/bin:/root/.local/bin:/root/.claude/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" >> /etc/environment
+# Install PM2
+RUN npm i -g pm2
 
 # Install PyTorch (CUDA 12.8)
 RUN uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
 
 # Install ComfyUI
-RUN git clone https://github.com/comfyanonymous/ComfyUI.git /root/ComfyUI \
-    && cd /root/ComfyUI \
+RUN git clone https://github.com/comfyanonymous/ComfyUI.git /opt/ComfyUI \
+    && cd /opt/ComfyUI \
     && uv pip install -r requirements.txt
 
 # Install ComfyUI-Manager
-RUN git clone https://github.com/ltdrdata/ComfyUI-Manager.git /root/ComfyUI/custom_nodes/ComfyUI-Manager
+RUN git clone https://github.com/ltdrdata/ComfyUI-Manager.git /opt/ComfyUI/custom_nodes/ComfyUI-Manager
+
+# Install Claude Code (official binary, installs to ~/.local/bin and ~/.claude)
+RUN curl -fsSL https://claude.ai/install.sh | bash
+ENV PATH="/root/.local/bin:/root/.claude/bin:${PATH}"
 
 # Install dotfiles
 RUN curl -sSL dot.yiwei.dev | bash
 
+# Persist environment for SSH sessions
+RUN echo "VIRTUAL_ENV=/opt/venv" >> /etc/environment \
+    && echo "PATH=/opt/venv/bin:/opt/uv:/root/.local/bin:/root/.claude/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" >> /etc/environment
+
 # Entrypoint
-COPY entrypoint.sh /root/.runpod/entrypoint.sh
-RUN chmod +x /root/.runpod/entrypoint.sh
+COPY entrypoint.sh /opt/runpod/entrypoint.sh
+RUN chmod +x /opt/runpod/entrypoint.sh
 
 EXPOSE 22 8188
 
-ENTRYPOINT ["/root/.runpod/entrypoint.sh"]
+ENTRYPOINT ["/opt/runpod/entrypoint.sh"]
