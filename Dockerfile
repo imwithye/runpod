@@ -61,9 +61,10 @@ RUN curl -sSL dot.yiwei.dev | bash
 
 # Entrypoint
 USER root
-COPY --chown=yiwei:yiwei entrypoint.sh /home/yiwei/entrypoint.sh
-RUN chmod +x /home/yiwei/entrypoint.sh
+RUN mkdir -p /home/yiwei/.runpod
+COPY --chown=yiwei:yiwei entrypoint.sh /home/yiwei/.runpod/entrypoint.sh
+RUN chmod +x /home/yiwei/.runpod/entrypoint.sh
 
 EXPOSE 22 8188
 
-ENTRYPOINT ["/home/yiwei/entrypoint.sh"]
+ENTRYPOINT ["/home/yiwei/.runpod/entrypoint.sh"]
