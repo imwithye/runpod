@@ -44,14 +44,18 @@ RUN brew install node go python uv
 RUN curl -fsSL https://claude.ai/install.sh | bash
 ENV PATH="/home/yiwei/.local/bin:/home/yiwei/.claude/bin:${PATH}"
 
+# Create global venv and activate by default
+RUN uv venv /home/yiwei/.venv
+ENV VIRTUAL_ENV="/home/yiwei/.venv"
+ENV PATH="/home/yiwei/.venv/bin:${PATH}"
+
 # Install PyTorch (CUDA 12.8)
-RUN uv pip install --system \
-    torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
+RUN uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
 
 # Install ComfyUI
 RUN git clone https://github.com/comfyanonymous/ComfyUI.git /home/yiwei/ComfyUI \
     && cd /home/yiwei/ComfyUI \
-    && uv pip install --system -r requirements.txt
+    && uv pip install -r requirements.txt
 
 # Install ComfyUI-Manager
 RUN git clone https://github.com/ltdrdata/ComfyUI-Manager.git /home/yiwei/ComfyUI/custom_nodes/ComfyUI-Manager
