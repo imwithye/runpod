@@ -12,7 +12,6 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
     file \
-    fzf \
     git \
     locales \
     ncurses-term \
@@ -62,6 +61,12 @@ RUN LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygi
     && tar xf lazygit.tar.gz lazygit \
     && install lazygit /usr/local/bin/ \
     && rm lazygit lazygit.tar.gz
+
+RUN FZF_VERSION=$(curl -s "https://api.github.com/repos/junegunn/fzf/releases/latest" | grep -Po '"tag_name": "v?\K[^"]*') \
+    && curl -Lo fzf.tar.gz "https://github.com/junegunn/fzf/releases/latest/download/fzf-${FZF_VERSION}-linux_amd64.tar.gz" \
+    && tar xf fzf.tar.gz fzf \
+    && install fzf /usr/local/bin/ \
+    && rm fzf fzf.tar.gz
 
 # =============================================================================
 # ComfyUI
