@@ -28,24 +28,25 @@ RUN sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config \
 
 WORKDIR /root
 
-# Install Homebrew (manual clone to support root)
-RUN git clone https://github.com/Homebrew/brew /home/linuxbrew/.linuxbrew/Homebrew \
-    && mkdir -p /home/linuxbrew/.linuxbrew/bin \
-    && ln -s ../Homebrew/bin/brew /home/linuxbrew/.linuxbrew/bin/
-ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}"
-ENV HOMEBREW_NO_AUTO_UPDATE=1
-ENV HOMEBREW_NO_INSTALL_CLEANUP=1
-ENV HOMEBREW_NO_ENV_HINTS=1
+# Install Node.js (via NodeSource)
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install dev toolchain via Homebrew
-RUN brew install node go python uv
+# Install Go
+RUN curl -fsSL https://go.dev/dl/go1.24.2.linux-amd64.tar.gz | tar -C /usr/local -xz
+ENV PATH="/usr/local/go/bin:${PATH}"
+
+# Install uv
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+ENV PATH="/root/.local/bin:${PATH}"
 
 # Install Claude Code (official binary)
 RUN curl -fsSL https://claude.ai/install.sh | bash
 ENV PATH="/root/.local/bin:/root/.claude/bin:${PATH}"
 
 # Create global venv and activate by default
-RUN uv venv /root/.venv
+RUN uv venv --python 3 /root/.venv
 ENV VIRTUAL_ENV="/root/.venv"
 ENV PATH="/root/.venv/bin:${PATH}"
 
