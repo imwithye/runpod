@@ -14,6 +14,13 @@ jobs:
     permissions:
       contents: read
       packages: write
+    strategy:
+      matrix:
+        include:
+          - build_type: gpu
+            suffix: ""
+          - build_type: cpu
+            suffix: "-cpu"
 
     steps:
       - uses: actions/checkout@v4
@@ -37,8 +44,9 @@ jobs:
           context: .
           platforms: linux/amd64
           push: true
+          build-args: BUILD_TYPE=${{ matrix.build_type }}
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${{ steps.sha.outputs.short }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}${{ matrix.suffix }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}${{ matrix.suffix }}:sha-${{ steps.sha.outputs.short }}
+          cache-from: type=gha,scope=${{ matrix.build_type }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.build_type }}
