@@ -19,14 +19,21 @@ RUN apt-get update && apt-get install -y \
     curl \
     file \
     git \
+    htop \
+    iproute2 \
+    jq \
     locales \
     ncurses-term \
+    net-tools \
     openssh-server \
     procps \
+    rsync \
     sudo \
     tmux \
+    unzip \
     vim \
     wget \
+    zip \
     zsh \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /run/sshd \
@@ -124,7 +131,10 @@ RUN uv pip install \
     opencv-python-headless \
     imageio \
     imageio-ffmpeg \
-    pillow
+    pillow \
+    tqdm \
+    requests \
+    pandas
 
 # =============================================================================
 # Monitoring: glances
