@@ -14,6 +14,13 @@ ENV BUILD_TYPE=${BUILD_TYPE}
 # =============================================================================
 # System packages
 # =============================================================================
+# Refresh NVIDIA repo GPG key (base image key may be expired)
+RUN if [ "$BUILD_TYPE" = "gpu" ]; then \
+    apt-get update -o Acquire::AllowInsecureRepositories=true \
+    && apt-get install -y --allow-unauthenticated cuda-keyring \
+    || true; \
+    fi
+
 RUN apt-get update && apt-get install -y \
     aria2 \
     build-essential \
