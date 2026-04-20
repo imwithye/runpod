@@ -93,6 +93,16 @@ RUN FZF_VERSION=$(curl -s "https://api.github.com/repos/junegunn/fzf/releases/la
     && install fzf /usr/local/bin/ \
     && rm fzf fzf.tar.gz
 
+RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" \
+    && install kubectl /usr/local/bin/ \
+    && rm kubectl
+
+RUN K9S_VERSION=$(curl -s "https://api.github.com/repos/derailed/k9s/releases/latest" | grep -Po '"tag_name": "\K[^"]*') \
+    && curl -Lo k9s.tar.gz "https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_amd64.tar.gz" \
+    && tar xf k9s.tar.gz k9s \
+    && install k9s /usr/local/bin/ \
+    && rm k9s k9s.tar.gz
+
 # =============================================================================
 # PyTorch
 # =============================================================================
