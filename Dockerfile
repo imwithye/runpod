@@ -109,13 +109,6 @@ RUN if [ "$BUILD_TYPE" = "gpu" ]; then \
     uv pip install bitsandbytes xformers; \
     fi
 
-# Image & video processing
-RUN uv pip install \
-    opencv-python-headless \
-    imageio \
-    imageio-ffmpeg \
-    pillow
-
 # =============================================================================
 # ComfyUI (GPU only)
 # =============================================================================
@@ -125,6 +118,13 @@ RUN if [ "$BUILD_TYPE" = "gpu" ]; then \
     && uv pip install -r requirements.txt \
     && git clone https://github.com/ltdrdata/ComfyUI-Manager.git /opt/ComfyUI/custom_nodes/ComfyUI-Manager; \
     fi
+
+# Image & video processing (after ComfyUI to override its opencv-python with headless)
+RUN uv pip install \
+    opencv-python-headless \
+    imageio \
+    imageio-ffmpeg \
+    pillow
 
 # =============================================================================
 # Monitoring: glances
