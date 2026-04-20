@@ -16,9 +16,14 @@ ENV BUILD_TYPE=${BUILD_TYPE}
 # =============================================================================
 # Refresh NVIDIA repo GPG key (base image key may be expired)
 RUN if [ "$BUILD_TYPE" = "gpu" ]; then \
-    apt-get update -o Acquire::AllowInsecureRepositories=true \
-    && apt-get install -y --allow-unauthenticated cuda-keyring \
-    || true; \
+    rm -f /etc/apt/sources.list.d/cuda*.list \
+    && apt-key del 7fa2af80 2>/dev/null || true \
+    && apt-get update -o Acquire::AllowInsecureRepositories=true \
+    && apt-get install -y --allow-unauthenticated ca-certificates curl \
+    && curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb -o /tmp/cuda-keyring.deb \
+    && dpkg -i /tmp/cuda-keyring.deb \
+    && rm /tmp/cuda-keyring.deb \
+    && rm -rf /var/lib/apt/lists/*; \
     fi
 
 RUN apt-get update && apt-get install -y \
