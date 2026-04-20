@@ -15,10 +15,13 @@ ENV BUILD_TYPE=${BUILD_TYPE}
 # System packages
 # =============================================================================
 RUN apt-get update && apt-get install -y \
+    aria2 \
     build-essential \
     curl \
+    ffmpeg \
     file \
     git \
+    git-lfs \
     htop \
     iproute2 \
     jq \
@@ -94,7 +97,7 @@ RUN if [ "$BUILD_TYPE" = "gpu" ]; then \
 
 # Hugging Face ecosystem
 RUN uv pip install \
-    huggingface_hub \
+    "huggingface_hub[cli]" \
     transformers \
     datasets \
     accelerate \
