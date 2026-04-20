@@ -69,15 +69,16 @@ fi
 ln -sf "$WORKSPACE/.claude.json" "$HOME/.claude.json"
 
 # =============================================================================
-# Workspace persistence — ComfyUI
+# Workspace persistence & start — ComfyUI (GPU only)
 # =============================================================================
-safe_symlink $WORKSPACE/comfyui/user /opt/ComfyUI/user
-safe_symlink $WORKSPACE/comfyui/input /opt/ComfyUI/input
-safe_symlink $WORKSPACE/comfyui/output /opt/ComfyUI/output
+if [ "$BUILD_TYPE" = "gpu" ]; then
+    safe_symlink $WORKSPACE/comfyui/user /opt/ComfyUI/user
+    safe_symlink $WORKSPACE/comfyui/input /opt/ComfyUI/input
+    safe_symlink $WORKSPACE/comfyui/output /opt/ComfyUI/output
 
-mkdir -p $WORKSPACE/comfyui/models/{checkpoints,loras,vae,clip,controlnet,upscale_models,embeddings}
+    mkdir -p $WORKSPACE/comfyui/models/{checkpoints,loras,vae,clip,controlnet,upscale_models,embeddings}
 
-cat > /opt/ComfyUI/extra_model_paths.yaml <<EOF
+    cat > /opt/ComfyUI/extra_model_paths.yaml <<EOF
 workspace:
     base_path: $WORKSPACE/comfyui/models
     checkpoints: checkpoints/
@@ -89,14 +90,15 @@ workspace:
     embeddings: embeddings/
 EOF
 
+    pm2 delete comfyui-8188 >/dev/null 2>&1 || true
+    pm2 start "python main.py --port 8188 --listen 127.0.0.1" \
+        --name comfyui-8188 \
+        --cwd /opt/ComfyUI
+fi
+
 # =============================================================================
 # Start services (localhost only, access via SSH port forwarding)
 # =============================================================================
-pm2 delete comfyui-8188 >/dev/null 2>&1 || true
-pm2 start "python main.py --port 8188 --listen 127.0.0.1" \
-    --name comfyui-8188 \
-    --cwd /opt/ComfyUI
-
 pm2 delete code-server-8080 >/dev/null 2>&1 || true
 pm2 start "code-server --bind-addr 127.0.0.1:8080 --auth none /workspace" \
     --name code-server-8080

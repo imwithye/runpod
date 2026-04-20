@@ -1,9 +1,15 @@
-FROM nvidia/cuda:12.8.1-devel-ubuntu24.04
+ARG BUILD_TYPE=gpu
+
+FROM nvidia/cuda:12.8.1-devel-ubuntu24.04 AS base-gpu
+FROM ubuntu:24.04 AS base-cpu
+FROM base-${BUILD_TYPE} AS final
+ARG BUILD_TYPE
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TERM=xterm-256color
 ENV COLORTERM=truecolor
 ENV LANG=en_US.UTF-8
+ENV BUILD_TYPE=${BUILD_TYPE}
 
 # =============================================================================
 # System packages
@@ -71,9 +77,13 @@ RUN FZF_VERSION=$(curl -s "https://api.github.com/repos/junegunn/fzf/releases/la
     && rm fzf fzf.tar.gz
 
 # =============================================================================
-# ComfyUI
+# PyTorch
 # =============================================================================
-RUN uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
+RUN if [ "$BUILD_TYPE" = "gpu" ]; then \
+    uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128; \
+    else \
+    uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu; \
+    fi
 
 # Hugging Face ecosystem
 RUN uv pip install \
@@ -89,12 +99,15 @@ RUN uv pip install \
 
 # ML tools & training
 RUN uv pip install \
-    bitsandbytes \
-    xformers \
     tensorboard \
     wandb \
     scipy \
     scikit-learn
+
+# GPU-only ML packages
+RUN if [ "$BUILD_TYPE" = "gpu" ]; then \
+    uv pip install bitsandbytes xformers; \
+    fi
 
 # Image & video processing
 RUN uv pip install \
@@ -103,16 +116,24 @@ RUN uv pip install \
     imageio-ffmpeg \
     pillow
 
-RUN git clone https://github.com/comfyanonymous/ComfyUI.git /opt/ComfyUI \
+# =============================================================================
+# ComfyUI (GPU only)
+# =============================================================================
+RUN if [ "$BUILD_TYPE" = "gpu" ]; then \
+    git clone https://github.com/comfyanonymous/ComfyUI.git /opt/ComfyUI \
     && cd /opt/ComfyUI \
-    && uv pip install -r requirements.txt
-
-RUN git clone https://github.com/ltdrdata/ComfyUI-Manager.git /opt/ComfyUI/custom_nodes/ComfyUI-Manager
+    && uv pip install -r requirements.txt \
+    && git clone https://github.com/ltdrdata/ComfyUI-Manager.git /opt/ComfyUI/custom_nodes/ComfyUI-Manager; \
+    fi
 
 # =============================================================================
 # Monitoring: glances
 # =============================================================================
-RUN uv pip install glances[gpu]
+RUN if [ "$BUILD_TYPE" = "gpu" ]; then \
+    uv pip install "glances[gpu]"; \
+    else \
+    uv pip install glances; \
+    fi
 
 # =============================================================================
 # code-server

@@ -6,13 +6,15 @@ echo "Runpod"
 echo ""
 
 # System info
-GPU_NAME=$(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null | head -1)
-GPU_MEM=$(nvidia-smi --query-gpu=memory.used,memory.total --format=csv,noheader,nounits 2>/dev/null | head -1 | awk -F', ' '{printf "%dMi / %dMi", $1, $2}')
 CPU_LOAD=$(cat /proc/loadavg | awk '{printf "%.1f %.1f %.1f", $1, $2, $3}')
 MEM_INFO=$(free -h | awk '/Mem:/ {printf "%s / %s", $3, $2}')
 DISK_INFO=$(df -h / | awk 'NR==2 {printf "%s / %s", $3, $2}')
 
-printf "  %-12s %s\n" "GPU:" "${GPU_NAME:-N/A} (${GPU_MEM:-N/A})"
+if [ "$BUILD_TYPE" = "gpu" ]; then
+    GPU_NAME=$(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null | head -1)
+    GPU_MEM=$(nvidia-smi --query-gpu=memory.used,memory.total --format=csv,noheader,nounits 2>/dev/null | head -1 | awk -F', ' '{printf "%dMi / %dMi", $1, $2}')
+    printf "  %-12s %s\n" "GPU:" "${GPU_NAME:-N/A} (${GPU_MEM:-N/A})"
+fi
 printf "  %-12s %s\n" "CPU Load:" "$CPU_LOAD"
 printf "  %-12s %s\n" "Memory:" "$MEM_INFO"
 printf "  %-12s %s\n" "Disk:" "$DISK_INFO"
