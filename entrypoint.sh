@@ -69,27 +69,9 @@ fi
 ln -sf "$WORKSPACE/.claude.json" "$HOME/.claude.json"
 
 # =============================================================================
-# Workspace persistence & start — ComfyUI (GPU only)
+# Start ComfyUI (GPU only)
 # =============================================================================
 if [ "$BUILD_TYPE" = "gpu" ]; then
-    safe_symlink $WORKSPACE/comfyui/user /opt/ComfyUI/user
-    safe_symlink $WORKSPACE/comfyui/input /opt/ComfyUI/input
-    safe_symlink $WORKSPACE/comfyui/output /opt/ComfyUI/output
-
-    mkdir -p $WORKSPACE/comfyui/models/{checkpoints,loras,vae,clip,controlnet,upscale_models,embeddings}
-
-    cat > /opt/ComfyUI/extra_model_paths.yaml <<EOF
-workspace:
-    base_path: $WORKSPACE/comfyui/models
-    checkpoints: checkpoints/
-    loras: loras/
-    vae: vae/
-    clip: clip/
-    controlnet: controlnet/
-    upscale_models: upscale_models/
-    embeddings: embeddings/
-EOF
-
     pm2 delete comfyui-8188 >/dev/null 2>&1 || true
     pm2 start "python main.py --port 8188 --listen 127.0.0.1" \
         --name comfyui-8188 \
