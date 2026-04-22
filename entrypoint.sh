@@ -73,9 +73,8 @@ ln -sf "$WORKSPACE/.claude.json" "$HOME/.claude.json"
 # =============================================================================
 if [ "$BUILD_TYPE" = "gpu" ]; then
     pm2 delete comfyui-8188 >/dev/null 2>&1 || true
-    pm2 start "python main.py --port 8188 --listen 127.0.0.1" \
-        --name comfyui-8188 \
-        --cwd /opt/ComfyUI
+    pm2 start "comfyui --port 8188 --listen 127.0.0.1" \
+        --name comfyui-8188
 fi
 
 # =============================================================================

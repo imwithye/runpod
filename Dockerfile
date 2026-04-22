@@ -147,8 +147,26 @@ RUN if [ "$BUILD_TYPE" = "gpu" ]; then \
 RUN if [ "$BUILD_TYPE" = "gpu" ]; then \
     git clone https://github.com/comfyanonymous/ComfyUI.git /opt/ComfyUI \
     && cd /opt/ComfyUI \
-    && uv pip install -r requirements.txt \
-    && git clone https://github.com/ltdrdata/ComfyUI-Manager.git /opt/ComfyUI/custom_nodes/ComfyUI-Manager; \
+    && uv venv --python 3 --seed .venv \
+    && VIRTUAL_ENV=/opt/ComfyUI/.venv uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128 \
+    && VIRTUAL_ENV=/opt/ComfyUI/.venv uv pip install -r requirements.txt \
+    && git clone https://github.com/ltdrdata/ComfyUI-Manager.git /opt/ComfyUI/custom_nodes/ComfyUI-Manager \
+    && printf '#!/bin/sh\ncd /opt/ComfyUI && exec .venv/bin/python main.py "$@"\n' > /usr/local/bin/comfyui \
+    && chmod +x /usr/local/bin/comfyui; \
+    fi
+
+# =============================================================================
+# AI Toolkit (GPU only, isolated venv to avoid numpy conflicts)
+# =============================================================================
+RUN if [ "$BUILD_TYPE" = "gpu" ]; then \
+    git clone https://github.com/ostris/ai-toolkit.git /opt/ai-toolkit \
+    && cd /opt/ai-toolkit \
+    && git submodule update --init --recursive \
+    && uv venv --python 3 --seed .venv \
+    && VIRTUAL_ENV=/opt/ai-toolkit/.venv uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128 \
+    && VIRTUAL_ENV=/opt/ai-toolkit/.venv uv pip install -r requirements.txt \
+    && printf '#!/bin/sh\ncd /opt/ai-toolkit && exec .venv/bin/python run.py "$@"\n' > /usr/local/bin/ai-toolkit \
+    && chmod +x /usr/local/bin/ai-toolkit; \
     fi
 
 # Image & video processing (after ComfyUI to override its opencv-python with headless)
