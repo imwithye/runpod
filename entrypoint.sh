@@ -75,6 +75,11 @@ if [ "$BUILD_TYPE" = "gpu" ]; then
     pm2 delete comfyui-8188 >/dev/null 2>&1 || true
     pm2 start "comfyui --port 8188 --listen 127.0.0.1" \
         --name comfyui-8188
+
+    pm2 delete ai-toolkit-8675 >/dev/null 2>&1 || true
+    pm2 start "npm run start" \
+        --name ai-toolkit-8675 \
+        --cwd /opt/ai-toolkit/ui
 fi
 
 # =============================================================================

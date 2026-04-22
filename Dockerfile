@@ -166,7 +166,8 @@ RUN if [ "$BUILD_TYPE" = "gpu" ]; then \
     && VIRTUAL_ENV=/opt/ai-toolkit/.venv uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128 \
     && VIRTUAL_ENV=/opt/ai-toolkit/.venv uv pip install -r requirements.txt \
     && printf '#!/bin/sh\ncd /opt/ai-toolkit && exec .venv/bin/python run.py "$@"\n' > /usr/local/bin/ai-toolkit \
-    && chmod +x /usr/local/bin/ai-toolkit; \
+    && chmod +x /usr/local/bin/ai-toolkit \
+    && cd /opt/ai-toolkit/ui && npm install && npm run build; \
     fi
 
 # Image & video processing (after ComfyUI to override its opencv-python with headless)
