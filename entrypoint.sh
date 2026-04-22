@@ -69,7 +69,7 @@ fi
 ln -sf "$WORKSPACE/.claude.json" "$HOME/.claude.json"
 
 # =============================================================================
-# Start ComfyUI (GPU only)
+# Start services (localhost only, access via SSH port forwarding)
 # =============================================================================
 if [ "$BUILD_TYPE" = "gpu" ]; then
     pm2 delete comfyui-8188 >/dev/null 2>&1 || true
@@ -82,9 +82,6 @@ if [ "$BUILD_TYPE" = "gpu" ]; then
         --cwd /opt/ai-toolkit/ui
 fi
 
-# =============================================================================
-# Start services (localhost only, access via SSH port forwarding)
-# =============================================================================
 pm2 delete code-server-8080 >/dev/null 2>&1 || true
 pm2 start "code-server --bind-addr 127.0.0.1:8080 --auth none /workspace" \
     --name code-server-8080

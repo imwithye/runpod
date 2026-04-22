@@ -170,7 +170,7 @@ RUN if [ "$BUILD_TYPE" = "gpu" ]; then \
     && cd /opt/ai-toolkit/ui && npm install && npm run build; \
     fi
 
-# Image & video processing (after ComfyUI to override its opencv-python with headless)
+# Image & video processing
 RUN uv pip install \
     opencv-python-headless \
     imageio \
