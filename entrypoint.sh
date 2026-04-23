@@ -73,14 +73,18 @@ ln -sf "$WORKSPACE/.claude.json" "$HOME/.claude.json"
 # Start services (localhost only, access via SSH port forwarding)
 # =============================================================================
 if [ "$BUILD_TYPE" = "gpu" ]; then
-    pm2 delete comfyui-8188 >/dev/null 2>&1 || true
-    pm2 start --silent "comfyui --port 8188 --listen 127.0.0.1" \
-        --name comfyui-8188
+    if [ -d /opt/ComfyUI/.venv ]; then
+        pm2 delete comfyui-8188 >/dev/null 2>&1 || true
+        pm2 start --silent "comfyui --port 8188 --listen 127.0.0.1" \
+            --name comfyui-8188
+    fi
 
-    pm2 delete ai-toolkit-8675 >/dev/null 2>&1 || true
-    pm2 start --silent "npm run start" \
-        --name ai-toolkit-8675 \
-        --cwd /opt/ai-toolkit/ui
+    if [ -d /opt/ai-toolkit/.venv ]; then
+        pm2 delete ai-toolkit-8675 >/dev/null 2>&1 || true
+        pm2 start --silent "npm run start" \
+            --name ai-toolkit-8675 \
+            --cwd /opt/ai-toolkit/ui
+    fi
 fi
 
 pm2 delete code-server-8080 >/dev/null 2>&1 || true

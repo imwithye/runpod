@@ -142,33 +142,22 @@ RUN if [ "$BUILD_TYPE" = "gpu" ]; then \
     fi
 
 # =============================================================================
-# ComfyUI (GPU only)
+# ComfyUI & AI Toolkit — on-demand install scripts (GPU only)
 # =============================================================================
-RUN if [ "$BUILD_TYPE" = "gpu" ]; then \
-    git clone https://github.com/comfyanonymous/ComfyUI.git /opt/ComfyUI \
-    && cd /opt/ComfyUI \
-    && uv venv --python 3 --seed .venv \
-    && VIRTUAL_ENV=/opt/ComfyUI/.venv uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128 \
-    && VIRTUAL_ENV=/opt/ComfyUI/.venv uv pip install -r requirements.txt \
-    && git clone https://github.com/ltdrdata/ComfyUI-Manager.git /opt/ComfyUI/custom_nodes/ComfyUI-Manager \
-    && printf '#!/bin/sh\ncd /opt/ComfyUI && exec .venv/bin/python main.py "$@"\n' > /usr/local/bin/comfyui \
-    && chmod +x /usr/local/bin/comfyui; \
-    fi
+COPY install-comfyui.sh install-ai-toolkit.sh /opt/runpod/
+RUN chmod +x /opt/runpod/install-comfyui.sh /opt/runpod/install-ai-toolkit.sh
 
-# =============================================================================
-# AI Toolkit (GPU only, isolated venv to avoid numpy conflicts)
-# =============================================================================
-RUN if [ "$BUILD_TYPE" = "gpu" ]; then \
-    git clone https://github.com/ostris/ai-toolkit.git /opt/ai-toolkit \
-    && cd /opt/ai-toolkit \
-    && git submodule update --init --recursive \
-    && uv venv --python 3 --seed .venv \
-    && VIRTUAL_ENV=/opt/ai-toolkit/.venv uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128 \
-    && VIRTUAL_ENV=/opt/ai-toolkit/.venv uv pip install -r requirements.txt \
-    && printf '#!/bin/sh\ncd /opt/ai-toolkit && exec .venv/bin/python run.py "$@"\n' > /usr/local/bin/ai-toolkit \
+RUN printf '#!/bin/sh\n\
+if [ ! -d /opt/ComfyUI/.venv ]; then echo "ComfyUI not installed. Run: install-comfyui" >&2; exit 1; fi\n\
+cd /opt/ComfyUI && exec .venv/bin/python main.py "$@"\n' > /usr/local/bin/comfyui \
+    && chmod +x /usr/local/bin/comfyui \
+    && ln -s /opt/runpod/install-comfyui.sh /usr/local/bin/install-comfyui
+
+RUN printf '#!/bin/sh\n\
+if [ ! -d /opt/ai-toolkit/.venv ]; then echo "AI Toolkit not installed. Run: install-ai-toolkit" >&2; exit 1; fi\n\
+cd /opt/ai-toolkit && exec .venv/bin/python run.py "$@"\n' > /usr/local/bin/ai-toolkit \
     && chmod +x /usr/local/bin/ai-toolkit \
-    && cd /opt/ai-toolkit/ui && npm install && npm run build; \
-    fi
+    && ln -s /opt/runpod/install-ai-toolkit.sh /usr/local/bin/install-ai-toolkit
 
 # Image & video processing
 RUN uv pip install \
