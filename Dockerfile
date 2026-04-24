@@ -148,14 +148,14 @@ COPY install-comfyui.sh install-ai-toolkit.sh /opt/runpod/
 RUN chmod +x /opt/runpod/install-comfyui.sh /opt/runpod/install-ai-toolkit.sh
 
 RUN printf '#!/bin/sh\n\
-if [ ! -d /opt/ComfyUI/.venv ]; then echo "ComfyUI not installed. Run: install-comfyui" >&2; exit 1; fi\n\
-cd /opt/ComfyUI && exec .venv/bin/python main.py "$@"\n' > /usr/local/bin/comfyui \
+    if [ ! -d /opt/ComfyUI/.venv ]; then echo "ComfyUI not installed. Run: install-comfyui" >&2; exit 1; fi\n\
+    cd /opt/ComfyUI && exec .venv/bin/python main.py "$@"\n' > /usr/local/bin/comfyui \
     && chmod +x /usr/local/bin/comfyui \
     && ln -s /opt/runpod/install-comfyui.sh /usr/local/bin/install-comfyui
 
 RUN printf '#!/bin/sh\n\
-if [ ! -d /opt/ai-toolkit/.venv ]; then echo "AI Toolkit not installed. Run: install-ai-toolkit" >&2; exit 1; fi\n\
-cd /opt/ai-toolkit && exec .venv/bin/python run.py "$@"\n' > /usr/local/bin/ai-toolkit \
+    if [ ! -d /opt/ai-toolkit/.venv ]; then echo "AI Toolkit not installed. Run: install-ai-toolkit" >&2; exit 1; fi\n\
+    cd /opt/ai-toolkit && exec .venv/bin/python run.py "$@"\n' > /usr/local/bin/ai-toolkit \
     && chmod +x /usr/local/bin/ai-toolkit \
     && ln -s /opt/runpod/install-ai-toolkit.sh /usr/local/bin/install-ai-toolkit
 
@@ -193,6 +193,9 @@ ENV PATH="/root/.local/bin:/root/.claude/bin:${PATH}"
 # User config & environment
 # =============================================================================
 RUN curl -sSL dot.yiwei.dev | bash
+
+# Agent guidelines (placed in /workspace by entrypoint)
+COPY AGENTS.md /opt/runpod/AGENTS.md
 
 # Welcome message
 COPY motd.sh /opt/runpod/motd.sh

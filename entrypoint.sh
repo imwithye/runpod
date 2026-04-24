@@ -56,6 +56,14 @@ if [ -d "$HOME/.claude" ] && [ ! -L "$HOME/.claude" ]; then
 fi
 safe_symlink $WORKSPACE/.claude $HOME/.claude
 
+# AGENTS.md + claude.md (symlink) — workspace guidelines for AI agents
+if [ ! -f "$WORKSPACE/AGENTS.md" ]; then
+    ln -sf /opt/runpod/AGENTS.md "$WORKSPACE/AGENTS.md"
+fi
+if [ ! -f "$WORKSPACE/CLAUDE.md" ]; then
+    ln -sf /opt/runpod/AGENTS.md "$WORKSPACE/CLAUDE.md"
+fi
+
 # ~/.claude.json (MCP servers, project trust, onboarding state)
 if [ -f "$HOME/.claude.json" ] && [ ! -L "$HOME/.claude.json" ]; then
     if [ ! -f "$WORKSPACE/.claude.json" ]; then
