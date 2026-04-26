@@ -187,6 +187,11 @@ RUN if [ "$BUILD_TYPE" = "gpu" ]; then \
 RUN curl -fsSL https://code-server.dev/install.sh | sh
 
 # =============================================================================
+# webdrive (file browser)
+# =============================================================================
+RUN curl -sSL https://raw.githubusercontent.com/cross-entropy-ai/webdrive/main/install.sh | bash
+
+# =============================================================================
 # Claude Code (installs to ~/.local/bin and ~/.claude, no custom dir support)
 # =============================================================================
 RUN curl -fsSL https://claude.ai/install.sh | bash

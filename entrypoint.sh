@@ -84,4 +84,8 @@ pm2 delete code-server-8080 >/dev/null 2>&1 || true
 pm2 start --silent "code-server --bind-addr 127.0.0.1:8080 --auth none /workspace" \
     --name code-server-8080
 
+pm2 delete webdrive-9090 >/dev/null 2>&1 || true
+pm2 start --silent "webdrive --host 127.0.0.1 -p 9090 /root" \
+    --name webdrive-9090
+
 exec /usr/sbin/sshd -D
