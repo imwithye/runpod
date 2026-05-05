@@ -45,6 +45,7 @@ RUN apt-get update && apt-get install -y \
     net-tools \
     openssh-server \
     procps \
+    rclone \
     rsync \
     sudo \
     tmux \
