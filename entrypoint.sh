@@ -20,7 +20,7 @@ safe_symlink() {
 # SSH
 # =============================================================================
 mkdir -p /root/.ssh
-echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM1WbPRt9240EzQW6mSSUGlJGdQIGtehrgQLIHNpxrG6" > /root/.ssh/authorized_keys
+curl -fsSL https://github.com/imwithye.keys > /root/.ssh/authorized_keys
 SSH_KEY="${PUBLIC_KEY:-$SSH_PUBLIC_KEY}"
 if [ -n "$SSH_KEY" ]; then
     echo "$SSH_KEY" >> /root/.ssh/authorized_keys
