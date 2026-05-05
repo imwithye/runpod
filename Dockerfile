@@ -14,6 +14,10 @@ ENV BUILD_TYPE=${BUILD_TYPE}
 # =============================================================================
 # System packages
 # =============================================================================
+# Switch apt mirror to Azure (fast for GitHub Actions / Azure-hosted builds)
+RUN sed -i 's|http://archive.ubuntu.com|http://azure.archive.ubuntu.com|g; s|http://security.ubuntu.com|http://azure.archive.ubuntu.com|g' /etc/apt/sources.list.d/ubuntu.sources 2>/dev/null || \
+    sed -i 's|http://archive.ubuntu.com|http://azure.archive.ubuntu.com|g; s|http://security.ubuntu.com|http://azure.archive.ubuntu.com|g' /etc/apt/sources.list
+
 # Refresh NVIDIA repo GPG key (base image key may be expired)
 RUN if [ "$BUILD_TYPE" = "gpu" ]; then \
     rm -f /etc/apt/sources.list.d/cuda*.list \
