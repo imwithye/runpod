@@ -78,6 +78,20 @@ fi
 ln -sf "$WORKSPACE/.claude.json" "$HOME/.claude.json"
 
 # =============================================================================
+# K8s in-cluster kubeconfig (for k9s/kubectl inside pod)
+# =============================================================================
+SA_DIR="/var/run/secrets/kubernetes.io/serviceaccount"
+if [ -f "$SA_DIR/token" ] && [ ! -f "$HOME/.kube/config" ]; then
+    kubectl config set-cluster in-cluster \
+        --server=https://kubernetes.default.svc \
+        --certificate-authority="$SA_DIR/ca.crt" >/dev/null
+    kubectl config set-credentials sa-user \
+        --token="$(cat $SA_DIR/token)" >/dev/null
+    kubectl config set-context default --cluster=in-cluster --user=sa-user >/dev/null
+    kubectl config use-context default >/dev/null
+fi
+
+# =============================================================================
 # Start services (localhost only, access via SSH port forwarding)
 # =============================================================================
 pm2 delete code-server-8080 >/dev/null 2>&1 || true
