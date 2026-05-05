@@ -36,7 +36,6 @@ RUN apt-get update && apt-get install -y \
     git-lfs \
     htop \
     iproute2 \
-    jq \
     locales \
     ncurses-term \
     net-tools \
@@ -101,15 +100,30 @@ RUN FZF_VERSION=$(curl -s "https://api.github.com/repos/junegunn/fzf/releases/la
     && install fzf /usr/local/bin/ \
     && rm fzf fzf.tar.gz
 
+RUN curl -Lo jq "https://github.com/jqlang/jq/releases/latest/download/jq-linux-amd64" \
+    && install jq /usr/local/bin/ \
+    && rm jq
+
+RUN curl -Lo yq "https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64" \
+    && install yq /usr/local/bin/ \
+    && rm yq
+
+RUN curl -Lo yazi.zip "https://github.com/sxyazi/yazi/releases/latest/download/yazi-x86_64-unknown-linux-gnu.zip" \
+    && unzip yazi.zip \
+    && install yazi-x86_64-unknown-linux-gnu/yazi /usr/local/bin/ \
+    && rm -rf yazi.zip yazi-x86_64-unknown-linux-gnu
+
 RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" \
     && install kubectl /usr/local/bin/ \
     && rm kubectl
 
-RUN K9S_VERSION=$(curl -s "https://api.github.com/repos/derailed/k9s/releases/latest" | grep -Po '"tag_name": "\K[^"]*') \
-    && curl -Lo k9s.tar.gz "https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_amd64.tar.gz" \
+RUN curl -Lo k9s.tar.gz "https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_amd64.tar.gz" \
     && tar xf k9s.tar.gz k9s \
     && install k9s /usr/local/bin/ \
     && rm k9s k9s.tar.gz
+
+RUN mkdir -p /usr/share/kube-ps1 \
+    && curl -Lo /usr/share/kube-ps1/kube-ps1.sh "https://github.com/jonmosco/kube-ps1/raw/master/kube-ps1.sh"
 
 # =============================================================================
 # PyTorch
